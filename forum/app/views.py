@@ -5,8 +5,8 @@ from rest_framework import serializers, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Category, Tag, Question, Comment
-from .serializers import CategorySerializer, TagSerializer, CommentSerializer, QuestionSerializer
+from .models import Category, Tag, Question, Comment, Answer
+from .serializers import CategorySerializer, TagSerializer, CommentSerializer, QuestionSerializer, AnswerSerializer
 
 
 @api_view(['POST'])
@@ -38,20 +38,21 @@ def add_tag(request):
 
 
 @api_view(['POST'])
-def add_comment(request):
-    comment_data = request.data.get('comment', {})
-    question_id = comment_data.get('question', None)
+def add_answer(request):
+    answer_data = request.data.get('answer', {})
+    question_id = answer_data.get('question', None)
     if question_id:
         question = Question.objects.get(pk=question_id)
-        comment_data['question'] = question.id
+        answer_data['question'] = question.id
 
-    print (comment_data)
-    comment = CommentSerializer(data=comment_data)
-    if comment.is_valid():
-        comment.save()
-        return Response(comment.data, status=status.HTTP_201_CREATED)
+    print(answer_data)
+    answer = AnswerSerializer(data=answer_data)
+    print(answer)
+    if answer.is_valid():
+        answer.save()
+        return Response(answer.data, status=status.HTTP_201_CREATED)
     else:
-        return Response(comment.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(answer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -128,11 +129,61 @@ def one_question(request,id):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['GET'])
-def get_all_comments_by_question(request,id):
-    comments = Comment.objects.filter(question_id=id)
-    if comments:
-        serializer = CommentSerializer(comments, many=True)
+def get_all_answers_by_question(request, id):
+    answers = Answer.objects.filter(question_id=id).prefetch_related('comment_set')
+    if answers:
+        serializer = AnswerSerializer(answers, many=True)
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def get_solution_answer_question(request,id):
+    answer = Answer.objects.filter(question_id=id, solution=True)
+    if answer:
+        serializer = AnswerSerializer(answer)
+        return Response(serializer.data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def add_comment(request):
+    comment_data = request.data.get('comment', {})
+    answer_id = comment_data.get('answer', None)
+    if answer_id:
+        answer = Answer.objects.get(pk=answer_id)
+        comment_data['answer'] = answer.id
+
+    comment = CommentSerializer(data=comment_data)
+    if comment.is_valid():
+        comment.save()
+        return Response(comment.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(comment.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_question_with_answers_and_comments(request, question_id):
+    try:
+        question = Question.objects.get(pk=question_id)
+    except Question.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    answers = Answer.objects.filter(question=question_id)
+
+    serialized_answers = []
+    for answer in answers:
+        comments = Comment.objects.filter(answer=answer)
+        serialized_comments = CommentSerializer(comments, many=True).data
+        serialized_answer = AnswerSerializer(answer).data
+        serialized_answer['comments'] = serialized_comments
+        serialized_answers.append(serialized_answer)
+
+    serialized_question = QuestionSerializer(question).data
+    serialized_question['answers'] = serialized_answers
+
+    return Response(serialized_question, status=status.HTTP_200_OK)

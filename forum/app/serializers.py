@@ -2,7 +2,7 @@
 from django.db.models import fields
 from rest_framework import serializers
 
-from .models import Question, Tag, Comment, Category
+from .models import Question, Tag, Comment, Category, Answer
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -28,11 +28,21 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    #question = QuestionSerializer( read_only=True)
 
     class Meta:
         model = Comment
         fields = '__all__'
+
+
+class AnswerSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Answer
+        fields = '__all__'
+
+
+
 
 
 

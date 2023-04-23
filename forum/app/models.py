@@ -36,7 +36,7 @@ class Question(models.Model):
         return self.title
 
 
-class Comment(models.Model):
+class Answer(models.Model):
     content = models.TextField()
     votes = models.PositiveIntegerField(default=0)
     up_vote = models.PositiveIntegerField(default=0)
@@ -46,6 +46,15 @@ class Comment(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     author = models.PositiveIntegerField(null=True)
     solution = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return self.content
+
+
+class Comment(models.Model):
+    content = models.TextField()
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    author = models.PositiveIntegerField(null=True)
 
     def __str__(self) -> str:
         return self.content
