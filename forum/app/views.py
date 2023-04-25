@@ -78,7 +78,7 @@ def add_question(request):
         return Response({"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
 
     question = Question(
-        author=1,
+        author=question_data.get('author', None),
         title=question_data.get('title', ""),
         content=question_data.get('content', ""),
         category=category,
