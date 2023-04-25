@@ -15,6 +15,7 @@ urlpatterns = [
     path('solution_answer_question/<int:id>/', views.get_solution_answer_question, name='solution_answer_question'),
     path('add_comment', views.add_comment, name='add-comment'),
     path('question/<int:question_id>/', views.get_question_with_answers_and_comments, name='get_question_with_answers_and_comments'),
+    path('update_answer_vote/<int:id>', views.update_answer_vote, name='add-update_answer_vote'),
 
 
 ]

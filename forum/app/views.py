@@ -39,15 +39,14 @@ def add_tag(request):
 
 @api_view(['POST'])
 def add_answer(request):
+    print(request)
     answer_data = request.data.get('answer', {})
     question_id = answer_data.get('question', None)
     if question_id:
         question = Question.objects.get(pk=question_id)
         answer_data['question'] = question.id
 
-    print(answer_data)
     answer = AnswerSerializer(data=answer_data)
-    print(answer)
     if answer.is_valid():
         answer.save()
         return Response(answer.data, status=status.HTTP_201_CREATED)
@@ -187,3 +186,28 @@ def get_question_with_answers_and_comments(request, question_id):
     serialized_question['answers'] = serialized_answers
 
     return Response(serialized_question, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def update_answer_vote(request,id):
+    try:
+        answer = Answer.objects.get(pk=id)
+    except Answer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    vote = request.data.get('vote', "")
+
+    if vote == 'up':
+        print(vote)
+        answer.votes += 1
+        answer.up_vote += 1
+
+    elif vote == 'down':
+        answer.votes -= 1
+        answer.down_vote += 1
+    else :
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    answer.save()
+    serialized_answer = AnswerSerializer(answer).data
+
+    return Response(serialized_answer, status=status.HTTP_200_OK)
+
