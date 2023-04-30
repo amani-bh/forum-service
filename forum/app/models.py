@@ -24,7 +24,9 @@ class Category(models.Model):
 
 
 class Question(models.Model):
-    author = models.PositiveIntegerField()
+    author_id = models.PositiveIntegerField()
+    author_name = models.CharField(max_length=255)
+    author_image = models.URLField()
     title = models.CharField(max_length=255)
     content = models.TextField()
     views_number = models.PositiveIntegerField(default=0)
@@ -47,7 +49,9 @@ class Answer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    author = models.PositiveIntegerField(null=True)
+    author_id = models.PositiveIntegerField()
+    author_name = models.CharField(max_length=255)
+    author_image = models.URLField()
     solution = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
 
@@ -58,7 +62,9 @@ class Answer(models.Model):
 class Comment(models.Model):
     content = models.TextField()
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
-    author = models.PositiveIntegerField(null=True)
+    author_id = models.PositiveIntegerField()
+    author_name = models.CharField(max_length=255)
+    author_image = models.URLField()
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self) -> str:

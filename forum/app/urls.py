@@ -8,6 +8,7 @@ urlpatterns = [
     path('add_tag', views.add_tag, name='add-tag'),
     path('all_tags', views.all_tags, name='all-tags'),
     path('add_answer', views.add_answer, name='add-answer'),
+    path('update_question', views.update_question, name='update_question'),
     path('add_question', views.add_question, name='add-question'),
     path('all_questions', views.all_questions, name='all-questions'),
     path('get_question/<int:id>/', views.one_question, name='one-question'),

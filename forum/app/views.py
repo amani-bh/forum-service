@@ -77,7 +77,9 @@ def add_question(request):
         return Response({"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
 
     question = Question(
-        author=question_data.get('author', None),
+        author_id=question_data.get('author_id', None),
+        author_name=question_data.get('author_name', None),
+        author_image=question_data.get('author_image', None),
         title=question_data.get('title', ""),
         content=question_data.get('content', ""),
         category=category,
@@ -87,6 +89,43 @@ def add_question(request):
 
     question_serializer = QuestionSerializer(question)
     return Response(question_serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['PUT'])
+def update_question(request):
+    question_data = request.data.get('question', {})
+    print(question_data)
+    question_id=question_data.get('id', None)
+    try:
+        question = Question.objects.get(pk=question_id)
+    except Question.DoesNotExist:
+        return Response({"error": "Question not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Mettre à jour les champs de la question à partir des données de la requête
+
+    question.title = question_data.get('title', question.title)
+    question.content = question_data.get('content', question.content)
+    question.category_id = question_data.get('category_id', question.category_id)
+
+    # Mettre à jour les tags de la question
+    tags = question_data.get('tags', [])
+    question_tags = []
+    if len(tags) != 0:
+        for tag in tags:
+            tag_serializer = TagSerializer(data={"name": tag['text']})
+            if not Tag.objects.filter(name=tag['text']).exists():
+                if tag_serializer.is_valid():
+                    saved_tag = tag_serializer.save()
+                    question_tags.append(saved_tag)
+            else:
+                existing_tag = Tag.objects.filter(name=tag['text']).first()
+                question_tags.append(existing_tag)
+    question.tags.set(question_tags)
+
+    question.save()
+
+    question_serializer = QuestionSerializer(question)
+    return Response(question_serializer.data)
 
 
 @api_view(['GET'])
@@ -106,7 +145,7 @@ def all_tags(request):
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
     else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return  Response([])
 
 
 @api_view(['GET'])
