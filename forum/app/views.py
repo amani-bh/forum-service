@@ -153,9 +153,14 @@ def all_questions(request):
     questions = Question.objects.all().order_by('-created_at')
     if questions:
         serializer = QuestionSerializer(questions, many=True)
-        return Response(serializer.data)
+        data = serializer.data
+        for question in data:
+            answers_count = Answer.objects.filter(question_id=question['id']).count()
+            question['answers_count'] = answers_count
+        return Response(data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 
 @api_view(['GET'])
@@ -173,16 +178,6 @@ def get_all_answers_by_question(request, id):
     answers = Answer.objects.filter(question_id=id).prefetch_related('comment_set')
     if answers:
         serializer = AnswerSerializer(answers, many=True)
-        return Response(serializer.data)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-
-@api_view(['GET'])
-def get_solution_answer_question(request,id):
-    answer = Answer.objects.filter(question_id=id, solution=True)
-    if answer:
-        serializer = AnswerSerializer(answer)
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -245,6 +240,19 @@ def update_answer_vote(request,id):
         answer.down_vote += 1
     else :
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    answer.save()
+    serialized_answer = AnswerSerializer(answer).data
+
+    return Response(serialized_answer, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def solution_answer_question(request, id):
+    try:
+        answer = Answer.objects.get(pk=id)
+    except Answer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    answer.solution=True
     answer.save()
     serialized_answer = AnswerSerializer(answer).data
 
