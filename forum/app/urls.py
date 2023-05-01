@@ -17,6 +17,8 @@ urlpatterns = [
     path('add_comment', views.add_comment, name='add-comment'),
     path('question/<int:question_id>/', views.get_question_with_answers_and_comments, name='get_question_with_answers_and_comments'),
     path('update_answer_vote/<int:id>', views.update_answer_vote, name='add-update_answer_vote'),
+    path('question_by_user/<int:id>/', views.questions_by_user, name='question_by_user'),
+    path('answers_by_user/<int:id>/', views.answers_by_user),
 
 
 ]

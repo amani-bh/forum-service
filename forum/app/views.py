@@ -162,6 +162,34 @@ def all_questions(request):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['GET'])
+def questions_by_user(request,id):
+    questions = Question.objects.filter(author_id=id).order_by('-created_at')
+    if questions:
+        serializer = QuestionSerializer(questions, many=True)
+        data = serializer.data
+        for question in data:
+            answers_count = Answer.objects.filter(question_id=question['id']).count()
+            question['answers_count'] = answers_count
+        return Response(data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def answers_by_user(request,id):
+    answers = Answer.objects.filter(author_id=id).order_by('-created_at')
+    if answers:
+        serializer = AnswerSerializer(answers, many=True)
+        data = serializer.data
+        for answer in data:
+            comments_count = Comment.objects.filter(answer_id=answer['id']).count()
+            answer['comments_count'] = comments_count
+        return Response(data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
 
 @api_view(['GET'])
 def one_question(request,id):
