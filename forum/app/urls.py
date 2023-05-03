@@ -19,6 +19,8 @@ urlpatterns = [
     path('update_answer_vote/<int:id>', views.update_answer_vote, name='add-update_answer_vote'),
     path('question_by_user/<int:id>/', views.questions_by_user, name='question_by_user'),
     path('answers_by_user/<int:id>/', views.answers_by_user),
+    path('answer_by_id/<int:id>/', views.answer_by_id),
+    path('update_answer/<int:id>', views.update_answer),
 
 
 ]

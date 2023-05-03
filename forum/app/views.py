@@ -286,3 +286,29 @@ def solution_answer_question(request, id):
 
     return Response(serialized_answer, status=status.HTTP_200_OK)
 
+
+@api_view(['GET'])
+def answer_by_id(request,id):
+   try:
+        answer = Answer.objects.get(pk=id)
+        return Response(AnswerSerializer(answer).data, status=status.HTTP_200_OK)
+
+   except Answer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def update_answer(request,id):
+    try:
+        answer = Answer.objects.get(pk=id)
+    except Answer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    content = request.data.get('content', "")
+    answer.content=content
+    answer.save()
+    serialized_answer = AnswerSerializer(answer).data
+    return Response(serialized_answer, status=status.HTTP_200_OK)
+
+
+
