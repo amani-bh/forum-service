@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render
 
 # Create your views here.
@@ -309,6 +310,19 @@ def update_answer(request,id):
     answer.save()
     serialized_answer = AnswerSerializer(answer).data
     return Response(serialized_answer, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def search_question (request):
+    query = request.GET.get('query', '')
+    print(query)
+    if query:
+        questions = Question.objects.filter(Q(title__icontains=query) | Q(content__icontains=query))
+    else:
+        questions = Question.objects.all().order_by('-created_at')
+
+    serializer = QuestionSerializer(questions, many=True)
+    return Response(serializer.data)
 
 
 

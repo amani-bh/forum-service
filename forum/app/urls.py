@@ -21,6 +21,7 @@ urlpatterns = [
     path('answers_by_user/<int:id>/', views.answers_by_user),
     path('answer_by_id/<int:id>/', views.answer_by_id),
     path('update_answer/<int:id>', views.update_answer),
+    path('search_question', views.search_question),
 
 
 ]
