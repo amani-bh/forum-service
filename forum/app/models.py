@@ -27,6 +27,7 @@ class Question(models.Model):
     author_id = models.PositiveIntegerField()
     author_name = models.CharField(max_length=255)
     author_image = models.URLField()
+    author_badge = models.CharField(max_length=255, default="Novice")
     title = models.CharField(max_length=255)
     content = models.TextField()
     views_number = models.PositiveIntegerField(default=0)
@@ -51,6 +52,7 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     author_id = models.PositiveIntegerField()
     author_name = models.CharField(max_length=255)
+    author_badge = models.CharField(max_length=255, default="Novice")
     author_image = models.URLField()
     solution = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
@@ -64,11 +66,29 @@ class Comment(models.Model):
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
     author_id = models.PositiveIntegerField()
     author_name = models.CharField(max_length=255)
+    author_badge = models.CharField(max_length=255, default="Novice")
     author_image = models.URLField()
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.content
 
+
+class Like(models.Model):
+    user_id = models.IntegerField()
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Vote(models.Model):
+    user_id = models.IntegerField()
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class View(models.Model):
+    user_id = models.IntegerField()
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
