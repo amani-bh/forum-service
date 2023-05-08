@@ -16,12 +16,14 @@ urlpatterns = [
     path('solution_answer_question/<int:id>/', views.solution_answer_question, name='solution_answer_question'),
     path('add_comment', views.add_comment, name='add-comment'),
     path('question/<int:question_id>/', views.get_question_with_answers_and_comments, name='get_question_with_answers_and_comments'),
-    path('update_answer_vote/<int:id>', views.update_answer_vote, name='add-update_answer_vote'),
+    path('update_answer_vote/<int:id>/<int:idUser>', views.update_answer_vote, name='add-update_answer_vote'),
     path('question_by_user/<int:id>/', views.questions_by_user, name='question_by_user'),
     path('answers_by_user/<int:id>/', views.answers_by_user),
     path('answer_by_id/<int:id>/', views.answer_by_id),
     path('update_answer/<int:id>', views.update_answer),
     path('search_question', views.search_question),
+    path('add_view_question/<int:id>/<int:idUser>', views.add_view_question),
+    path('delete_answer/<int:id>', views.delete_answer),
 
 
 ]

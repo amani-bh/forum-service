@@ -6,8 +6,9 @@ from rest_framework import serializers, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Category, Tag, Question, Comment, Answer
-from .serializers import CategorySerializer, TagSerializer, CommentSerializer, QuestionSerializer, AnswerSerializer
+from .models import Category, Tag, Question, Comment, Answer, Vote, View
+from .serializers import CategorySerializer, TagSerializer, CommentSerializer, QuestionSerializer, AnswerSerializer, \
+    VoteSerializer, ViewSerializer
 
 
 @api_view(['POST'])
@@ -252,27 +253,35 @@ def get_question_with_answers_and_comments(request, question_id):
 
 
 @api_view(['POST'])
-def update_answer_vote(request,id):
+def update_answer_vote(request,id,idUser):
     try:
-        answer = Answer.objects.get(pk=id)
-    except Answer.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    vote = request.data.get('vote', "")
+        vote_user=Vote.objects.get(user_id=idUser,answer=id)
+        return Response("user already voted",status=status.HTTP_400_BAD_REQUEST)
+    except Vote.DoesNotExist:
+        try:
+            answer = Answer.objects.get(pk=id)
+        except Answer.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        vote = request.data.get('vote', "")
 
-    if vote == 'up':
-        print(vote)
-        answer.votes += 1
-        answer.up_vote += 1
+        if vote == 'up':
+            print(vote)
+            answer.votes += 1
+            answer.up_vote += 1
 
-    elif vote == 'down':
-        answer.votes -= 1
-        answer.down_vote += 1
-    else :
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    answer.save()
-    serialized_answer = AnswerSerializer(answer).data
-
-    return Response(serialized_answer, status=status.HTTP_200_OK)
+        elif vote == 'down':
+            answer.votes -= 1
+            answer.down_vote += 1
+        else :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        answer.save()
+        serialized_answer = AnswerSerializer(answer).data
+        voteT = VoteSerializer(data={"answer":id,"user_id":idUser})
+        if voteT.is_valid():
+            voteT.save()
+            return Response(serialized_answer, status=status.HTTP_201_CREATED)
+        else:
+            return Response(voteT.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -323,6 +332,38 @@ def search_question (request):
 
     serializer = QuestionSerializer(questions, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def add_view_question(request,id,idUser):
+    try:
+        view_user=View.objects.get(user_id=idUser,question=id)
+        return Response("view exist",status=status.HTTP_400_BAD_REQUEST)
+    except View.DoesNotExist:
+        view = ViewSerializer(data={"user_id":idUser,"question":id})
+        if view.is_valid():
+            try:
+                question = Question.objects.get(pk=id)
+            except Question.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+            view.save()
+            question.views_number+=1
+            question.save()
+            return Response(view.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(view.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def delete_answer(request,id):
+    try:
+        answer = Answer.objects.get(pk=id)
+    except View.DoesNotExist:
+        return Response( status=status.HTTP_404_NOT_FOUND)
+    answer.delete()
+    return Response({"message": "deleted"}, status=status.HTTP_200_OK)
+
 
 
 
