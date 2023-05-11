@@ -28,6 +28,9 @@ urlpatterns = [
     path('comment_by_id/<int:id>/', views.comment_by_id),
     path('delete_comment/<int:id>', views.delete_comment),
     path('delete_question/<int:id>', views.delete_question),
+    path('add_article', views.add_article),
+    path('all_articles', views.all_articles),
+    path('article_by_id/<int:article_id>', views.article_by_id),
 
 
 ]

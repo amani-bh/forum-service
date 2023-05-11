@@ -6,9 +6,9 @@ from rest_framework import serializers, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Category, Tag, Question, Comment, Answer, Vote, View
+from .models import Category, Tag, Question, Comment, Answer, Vote, View, Article, ArticleComment
 from .serializers import CategorySerializer, TagSerializer, CommentSerializer, QuestionSerializer, AnswerSerializer, \
-    VoteSerializer, ViewSerializer
+    VoteSerializer, ViewSerializer, ArticleSerializer, ArticleCommentSerializer
 
 
 @api_view(['POST'])
@@ -408,3 +408,75 @@ def delete_question(request,id):
         return Response( status=status.HTTP_404_NOT_FOUND)
     question.delete()
     return Response({"message": "deleted"}, status=status.HTTP_200_OK)
+
+
+
+
+@api_view(['POST'])
+def add_article(request):
+    article_data = request.data.get('article', {})
+    tags = article_data.get('tags', [])
+    article_tags = []
+    if len(tags) != 0:
+        for tag in tags:
+            tag_serializer = TagSerializer(data={"name": tag['text']})
+            if not Tag.objects.filter(name=tag['text']).exists():
+                if tag_serializer.is_valid():
+                    saved_tag = tag_serializer.save()
+                    article_tags.append(saved_tag)
+            else:
+                existing_tag = Tag.objects.filter(name=tag['text']).first()
+                article_tags.append(existing_tag)
+
+    article = Article(
+        author_id=article_data.get('author_id', None),
+        author_name=article_data.get('author_name', None),
+        author_image=article_data.get('author_image', None),
+        author_badge=article_data.get('author_badge', None),
+        title=article_data.get('title', ""),
+        content=article_data.get('content', "")
+    )
+    article.save()
+    article.tags.set(article_tags)
+    articleserializer = ArticleSerializer(article)
+    return Response(articleserializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+@api_view(['GET'])
+def article_by_id(request, article_id):
+    try:
+        article = Article.objects.get(pk=article_id)
+    except Article.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    comments = ArticleComment.objects.filter(article=article_id)
+
+    serialized_comments = []
+    for comment in comments:
+        serialized_comment = ArticleCommentSerializer(comment).data
+        serialized_comments.append(serialized_comment)
+
+    serialized_article = ArticleSerializer(article).data
+    serialized_article['comments'] = serialized_comments
+
+    return Response(serialized_article, status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET'])
+def all_articles(request):
+    articles = Article.objects.all().order_by('-created_at')
+    if articles:
+        serializer = ArticleSerializer(articles, many=True)
+        data = serializer.data
+        for article in data:
+            comments_count = ArticleComment.objects.filter(article_id=article['id']).count()
+            article['comments_count'] = comments_count
+        return Response(data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+

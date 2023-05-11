@@ -33,22 +33,25 @@
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files>
-      <object connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" object-ref="schemas/public/tables/app_vote" />
+      <object connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" object-ref="schemas/public/tables/app_article" />
     </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_article_tags" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_comment" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.auth_user" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_question_tags" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.auth_group" active-filter-id="" />
     <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_tag" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_like" active-filter-id="" />
     <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_question" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_answer" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_comment" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.auth_user" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.auth_group_permissions" active-filter-id="" />
     <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_category" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_article" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="44b3f96a-4023-411b-8d9f-e9378f16f7e7" dataset="public.app_vote" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
