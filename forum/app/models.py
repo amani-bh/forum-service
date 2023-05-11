@@ -92,3 +92,31 @@ class View(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class Article(models.Model):
+    author_id = models.PositiveIntegerField()
+    author_name = models.CharField(max_length=255)
+    author_image = models.URLField()
+    author_badge = models.CharField(max_length=255, default="Novice")
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    views_number = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    tags = models.ManyToManyField(Tag)
+    is_deleted = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return self.title
+
+
+class ArticleComment(models.Model):
+    content = models.TextField()
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    author_id = models.PositiveIntegerField()
+    author_name = models.CharField(max_length=255)
+    author_badge = models.CharField(max_length=255, default="Novice")
+    author_image = models.URLField()
+    is_deleted = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return self.content

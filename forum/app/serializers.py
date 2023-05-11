@@ -2,7 +2,7 @@
 from django.db.models import fields
 from rest_framework import serializers
 
-from .models import Question, Tag, Comment, Category, Answer, Like, Vote, View
+from .models import Question, Tag, Comment, Category, Answer, Like, Vote, View, Article, ArticleComment
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -59,6 +59,22 @@ class ViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = View
+        fields = '__all__'
+
+
+class ArticleSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Article
+        fields = '__all__'
+        depth = 1
+
+
+class ArticleCommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ArticleComment
         fields = '__all__'
 
 

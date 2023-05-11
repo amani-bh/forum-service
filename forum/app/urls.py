@@ -24,6 +24,10 @@ urlpatterns = [
     path('search_question', views.search_question),
     path('add_view_question/<int:id>/<int:idUser>', views.add_view_question),
     path('delete_answer/<int:id>', views.delete_answer),
+    path('update_comment/<int:id>', views.update_comment),
+    path('comment_by_id/<int:id>/', views.comment_by_id),
+    path('delete_comment/<int:id>', views.delete_comment),
+    path('delete_question/<int:id>', views.delete_question),
 
 
 ]

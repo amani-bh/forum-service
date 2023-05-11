@@ -359,11 +359,52 @@ def add_view_question(request,id,idUser):
 def delete_answer(request,id):
     try:
         answer = Answer.objects.get(pk=id)
-    except View.DoesNotExist:
+    except Answer.DoesNotExist:
         return Response( status=status.HTTP_404_NOT_FOUND)
     answer.delete()
     return Response({"message": "deleted"}, status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+def update_comment(request,id):
+    try:
+        comment = Comment.objects.get(pk=id)
+    except Comment.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    content = request.data.get('content', "")
+    comment.content=content
+    comment.save()
+    serialized_coment = CommentSerializer(comment).data
+    return Response(serialized_coment, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+def comment_by_id(request,id):
+
+   try:
+        comment = Comment.objects.get(pk=id)
+        return Response(CommentSerializer(comment).data, status=status.HTTP_200_OK)
+
+   except Comment.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def delete_comment(request,id):
+    try:
+        comment = Comment.objects.get(pk=id)
+    except Comment.DoesNotExist:
+        return Response( status=status.HTTP_404_NOT_FOUND)
+    comment.delete()
+    return Response({"message": "deleted"}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def delete_question(request,id):
+    try:
+        question = Question.objects.get(pk=id)
+    except Question.DoesNotExist:
+        return Response( status=status.HTTP_404_NOT_FOUND)
+    question.delete()
+    return Response({"message": "deleted"}, status=status.HTTP_200_OK)
