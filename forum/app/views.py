@@ -480,3 +480,74 @@ def all_articles(request):
 
 
 
+@api_view(['POST'])
+def add_comment_article(request):
+    comment_data = request.data.get('comment', {})
+    article_id = comment_data.get('article', None)
+    if article_id:
+        article = Article.objects.get(pk=article_id)
+        comment_data['article'] = article.id
+
+    comment = ArticleCommentSerializer(data=comment_data)
+    if comment.is_valid():
+        comment.save()
+        return Response(comment.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(comment.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+def one_article(request,id):
+    article = Article.objects.filter(pk=id).first()
+    if article:
+        serializer = ArticleSerializer(article)
+        return Response(serializer.data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+def update_article(request):
+    article_data = request.data.get('article', {})
+    article_id=article_data.get('id', None)
+    try:
+        article = Article.objects.get(pk=article_id)
+    except Article.DoesNotExist:
+        return Response({"error": "Article not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Mettre à jour les champs de l'article à partir des données de la requête
+
+    article.title = article_data.get('title', article.title)
+    article.content = article_data.get('content', article.content)
+
+    # Mettre à jour les tags de l'article'
+    tags = article_data.get('tags', [])
+    article_tags = []
+    if len(tags) != 0:
+        for tag in tags:
+            tag_serializer = TagSerializer(data={"name": tag['text']})
+            if not Tag.objects.filter(name=tag['text']).exists():
+                if tag_serializer.is_valid():
+                    saved_tag = tag_serializer.save()
+                    article_tags.append(saved_tag)
+            else:
+                existing_tag = Tag.objects.filter(name=tag['text']).first()
+                article_tags.append(existing_tag)
+    article.tags.set(article_tags)
+
+    article.save()
+
+    article_serializer = ArticleSerializer(article)
+    return Response(article_serializer.data)
+
+
+
+@api_view(['GET'])
+def delete_article(request,id):
+    try:
+        article = Article.objects.get(pk=id)
+    except Article.DoesNotExist:
+        return Response( status=status.HTTP_404_NOT_FOUND)
+    article.delete()
+    return Response({"message": "deleted"}, status=status.HTTP_200_OK)

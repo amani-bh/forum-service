@@ -31,6 +31,11 @@ urlpatterns = [
     path('add_article', views.add_article),
     path('all_articles', views.all_articles),
     path('article_by_id/<int:article_id>', views.article_by_id),
+    path('add_comment_article', views.add_comment_article),
+    path('get_article/<int:id>/', views.one_article),
+    path('update_article', views.update_article),
+    path('delete_article/<int:id>', views.delete_article),
+
 
 
 ]
