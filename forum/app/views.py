@@ -41,7 +41,6 @@ def add_tag(request):
 
 @api_view(['POST'])
 def add_answer(request):
-    print(request)
     answer_data = request.data.get('answer', {})
     question_id = answer_data.get('question', None)
     if question_id:
