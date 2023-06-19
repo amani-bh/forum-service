@@ -35,6 +35,7 @@ urlpatterns = [
     path('get_article/<int:id>/', views.one_article),
     path('update_article', views.update_article),
     path('delete_article/<int:id>', views.delete_article),
+    path('get_questions_with_most_answers', views.get_questions_with_most_answers),
 
 
 

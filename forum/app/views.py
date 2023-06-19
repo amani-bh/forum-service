@@ -1,8 +1,8 @@
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework import serializers, status
+from rest_framework import  status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -550,3 +550,13 @@ def delete_article(request,id):
         return Response( status=status.HTTP_404_NOT_FOUND)
     article.delete()
     return Response({"message": "deleted"}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_questions_with_most_answers(request):
+    try:
+        questions = Question.objects.annotate(num_answers=Count('answer')).order_by('-num_answers')[:5]
+        serializers = QuestionSerializer(questions,many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
+    except Question.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
